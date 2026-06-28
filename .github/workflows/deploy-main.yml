@@ -1,0 +1,26 @@
+name: Deploy Apache to PROD
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  deploy-prod:
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to PROD EC2 (Apache)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.PROD_EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/apache-proxy
+            git pull origin main
+            sudo apachectl -t
+            sudo systemctl restart httpd
