@@ -1,0 +1,26 @@
+name: Deploy Apache to Staging
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - closed
+
+jobs:
+  deploy:
+    if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Staging EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STG_EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.STG_EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/apache-proxy
+            git pull origin develop
+            sudo cp proxy.conf /etc/httpd/conf.d/proxy.conf
+            sudo apachectl -t
+            sudo systemctl restart httpd
