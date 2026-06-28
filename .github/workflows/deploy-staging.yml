@@ -1,4 +1,4 @@
-name: Deploy Apache to Staging
+name: Deploy Apache to DEV
 
 on:
   pull_request:
@@ -8,16 +8,18 @@ on:
       - closed
 
 jobs:
-  deploy:
+  deploy-dev:
+    # 「develop に向けた PR が merge された時のみ」
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: Deploy to Staging EC2
+      - name: Deploy to DEV EC2 (Apache)
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.STG_EC2_HOST }}
+          host: ${{ secrets.DEV_EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.STG_EC2_SSH_KEY }}
+          key: ${{ secrets.DEV_EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user/apache-proxy
             git pull origin develop
