@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# テスト用エンドポイント
+RewriteRule ^health$ - [L]
+
+# 管理画面ブロック例
+RewriteRule ^admin - [F]
